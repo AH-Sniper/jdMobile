@@ -1,0 +1,48 @@
+/* 通用样式 */
+*,
+::before,
+::after {
+	font-size: 14px;
+	margin: 0;
+	padding: 0;
+	/*清除点击高亮效果*/
+	-webkit-tap-highlight-color: transparent;
+	
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+
+	font-family: 'Microsoft Yahei',sans-serif;
+}
+
+/*input标签去掉默认样式*/
+input {
+	border: none;
+	-webkit-appearance: none;
+}
+
+/*a标签去掉下划线*/
+a {
+	text-decoration: none;
+}
+
+/*列表项去掉默认样式*/
+ol,ul {
+	list-style: none;
+}
+
+/*浮动，清除浮动*/
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.clearfix::before,
+.clearfix::after {
+	content: "";
+	display: block;
+	clear: both;
+	height: 0;
+	line-height: 0;
+	visibility: hidden;
+}
