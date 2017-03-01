@@ -27,7 +27,16 @@ function bannerMove(){
 	navLi[navIndex].classList.add('current');
 
 	var timer = setInterval(function(){
-		curIndex++;
+		move(true);
+	},2000);
+	
+	function move(bool){
+		// bool为true时向右轮播
+		if(bool) {
+			curIndex++;
+		} else {
+			curIndex--;
+		}
 		banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
 		banner.style.transition = 'all .5s';
 
@@ -42,7 +51,7 @@ function bannerMove(){
 			navIndex = navLi.length-1;
 		}
 		navLi[navIndex].classList.add('current');
-	},2000);
+	}
 
 	banner.addEventListener('webkitTransitionEnd',function(){
 		if(curIndex>=(total-1)){
@@ -55,4 +64,34 @@ function bannerMove(){
 			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
 		}
 	});
+
+	// 触摸事件
+	var startX = 0;
+	var moveX = 0;
+	banner.addEventListener('touchstart',function(e){
+
+		clearInterval(timer);
+		banner.style.transition = '';
+
+		startX = e.touches[0].clientX;
+	});
+	banner.addEventListener('touchmove',function(e){
+		moveX = e.touches[0].clientX - startX;
+
+		banner.style.transform = 'translateX('+(-width*curIndex+moveX)+'px)';
+	});
+	banner.addEventListener('touchend',function(){
+		// 向右划
+		if(moveX>0){
+			move(false);
+		} else if(moveX<0) {
+			// 向左划
+			move(true);
+		}
+		
+		timer = setInterval(function(){
+			move(true);
+		},2000);
+	});
+
 }
