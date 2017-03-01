@@ -26,11 +26,14 @@ function bannerMove(){
 	banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
 	navLi[navIndex].classList.add('current');
 
+
 	var timer = setInterval(function(){
 		move(true);
 	},2000);
 	
+
 	function move(bool){
+
 		// bool为true时向右轮播
 		if(bool) {
 			curIndex++;
@@ -38,8 +41,7 @@ function bannerMove(){
 			curIndex--;
 		}
 		banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
-		banner.style.transition = 'all .5s';
-
+		banner.style.transition = 'all .3s';
 		// banner nav
 		navIndex = curIndex -1;
 		for(var i=0;i<navLi.length;i++){
@@ -53,6 +55,7 @@ function bannerMove(){
 		navLi[navIndex].classList.add('current');
 	}
 
+	// transition 结束瞬间切换首尾
 	banner.addEventListener('webkitTransitionEnd',function(){
 		if(curIndex>=(total-1)){
 			curIndex = 1;
@@ -68,30 +71,51 @@ function bannerMove(){
 	// 触摸事件
 	var startX = 0;
 	var moveX = 0;
+	var isTouchMove = false;
+ 
 	banner.addEventListener('touchstart',function(e){
 
 		clearInterval(timer);
 		banner.style.transition = '';
 
+		// 填补快速划动在首尾连接处的bug
+		if (curIndex === (total -1)) {
+			curIndex = 1;
+			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+		} else if(curIndex === 0) {
+			curIndex = 8;
+			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+		}
+
 		startX = e.touches[0].clientX;
+		isTouchMove = false;
 	});
+
 	banner.addEventListener('touchmove',function(e){
+		isTouchMove = true;
 		moveX = e.touches[0].clientX - startX;
 
 		banner.style.transform = 'translateX('+(-width*curIndex+moveX)+'px)';
+
 	});
+
 	banner.addEventListener('touchend',function(){
-		// 向右划
-		if(moveX>0){
+		// 向右划，移动很小时不翻页
+		if(isTouchMove && moveX>(width/3)){
 			move(false);
-		} else if(moveX<0) {
+		} else if(isTouchMove && moveX<(-width/3)) {
 			// 向左划
 			move(true);
+
+		} else if(isTouchMove) {
+			banner.style.transition = 'all .3s';
+			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
 		}
 		
 		timer = setInterval(function(){
 			move(true);
 		},2000);
-	});
-
+		
+	});	
+	
 }
