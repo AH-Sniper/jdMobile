@@ -23,15 +23,27 @@ function bannerMove(){
 	var curIndex = 1;
 	var navIndex = curIndex -1;
 
-	banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+	// 重复操作的封装
+	var setTranslateX = function(){
+		banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+	};
+	var setTransition = function(){
+		banner.style.transition = 'all .3s';
+	};
+	var delTransition = function(){
+		banner.style.transition = '';
+	};
+
+	// 初始化
+	setTranslateX();
 	navLi[navIndex].classList.add('current');
 
-
+	// 设置自动轮播
 	var timer = setInterval(function(){
 		move(true);
 	},2000);
 	
-
+	// 轮播一次的函数
 	function move(bool){
 
 		// bool为true时向右轮播
@@ -40,8 +52,8 @@ function bannerMove(){
 		} else {
 			curIndex--;
 		}
-		banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
-		banner.style.transition = 'all .3s';
+		setTranslateX();
+		setTransition();
 		// banner nav
 		navIndex = curIndex -1;
 		for(var i=0;i<navLi.length;i++){
@@ -59,13 +71,13 @@ function bannerMove(){
 	banner.addEventListener('webkitTransitionEnd',function(){
 		if(curIndex>=(total-1)){
 			curIndex = 1;
-			banner.style.transition = '';
-			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
 		} else if(curIndex<=0) {
 			curIndex = total-2;
-			banner.style.transition = '';
-			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+		} else {
+			return;
 		}
+		delTransition();
+		setTranslateX();
 	});
 
 	// 触摸事件
@@ -76,18 +88,19 @@ function bannerMove(){
 	banner.addEventListener('touchstart',function(e){
 
 		clearInterval(timer);
-		banner.style.transition = '';
+		delTransition();
 
 		// 填补快速划动在首尾连接处的bug
 		if (curIndex === (total -1)) {
 			curIndex = 1;
-			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+			setTranslateX();
 		} else if(curIndex === 0) {
 			curIndex = 8;
-			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+			setTranslateX();
 		}
 
 		startX = e.touches[0].clientX;
+		// 每次触摸开始初始化bool值
 		isTouchMove = false;
 	});
 
@@ -106,10 +119,9 @@ function bannerMove(){
 		} else if(isTouchMove && moveX<(-width/3)) {
 			// 向左划
 			move(true);
-
 		} else if(isTouchMove) {
-			banner.style.transition = 'all .3s';
-			banner.style.transform = 'translateX('+(-width*curIndex)+'px)';
+			setTransition();
+			setTranslateX();
 		}
 		
 		timer = setInterval(function(){
